@@ -10,14 +10,13 @@ NC='\033[0m'
 DOMAIN='dev-a.pub.network'
 read -p $'\e[31mAre you publishing to PRODUCTION?\e[0m: '
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo -e "${GREN}*** Okay the domain will be $DOMAIN ***"
   DOMAIN='a.pub.network'
+  echo -e "${GREN}*** Okay the domain will be $DOMAIN ***"
 fi
 
 read -p "
 
 If you are missing the dev-a sub domain that means you will be publishing to PRODUCTION.
-
 
 Are you sure you're ready to publish the file prebid-universal-creative.js to $DOMAIN?" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then

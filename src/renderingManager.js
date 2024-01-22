@@ -2,14 +2,15 @@ import { parseUrl, transformAuctionTargetingData } from './utils';
 import { canLocatePrebid } from './environment';
 import { insertElement, getEmptyIframe } from './domHelper';
 import {prebidMessenger} from './messaging.js';
+import {Freestar} from "./freestar";
 
 export function renderBannerOrDisplayAd(doc, dataObject) {
   const targetingData = transformAuctionTargetingData(dataObject);
-
+  const freestar = new Freestar(targetingData);
   if (!canLocatePrebid(window)) {
-    renderCrossDomain(window, targetingData.adId, targetingData.adServerDomain, targetingData.pubUrl);
+    renderCrossDomain(window, freestar.adId, targetingData.adServerDomain, targetingData.pubUrl);
   } else {
-    renderLegacy(doc, targetingData.adId);
+    renderLegacy(doc, freestar.adId);
   }
 }
 

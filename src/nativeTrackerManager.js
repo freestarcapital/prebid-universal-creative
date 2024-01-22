@@ -4,6 +4,7 @@
 import { parseUrl, triggerPixel, transformAuctionTargetingData } from './utils';
 import { newNativeAssetManager } from './nativeAssetManager';
 import {prebidMessenger} from './messaging.js';
+import {Freestar} from "./freestar";
 
 const AD_ANCHOR_CLASS_NAME = 'pb-click';
 const AD_DATA_ADID_ATTRIBUTE = 'pbAdId';
@@ -71,10 +72,11 @@ export function newNativeTrackerManager(win) {
   // START OF MAIN CODE
   let startTrackers = function (dataObject) {
     const targetingData = transformAuctionTargetingData(dataObject);
+    const freestar = new Freestar(targetingData);
     sendMessage = prebidMessenger(targetingData.pubUrl, win);
     const nativeAssetManager = newNativeAssetManager(window, targetingData.pubUrl);
 
-    if (targetingData && targetingData.env === 'mobile-app') {
+    if (freestar && freestar.env === 'mobile-app') {
       let cb = function({clickTrackers, impTrackers, eventtrackers} = {}) {
         function loadMobileClickTrackers(clickTrackers) {
           (clickTrackers || []).forEach(triggerPixel);
@@ -96,7 +98,7 @@ export function newNativeTrackerManager(win) {
           .map(tracker => tracker.url)
           .forEach(trackerUrl => loadScript(document, trackerUrl));
       }
-      nativeAssetManager.loadMobileAssets(targetingData, cb);
+      nativeAssetManager.loadMobileAssets(freestar, cb);
     } else {
       let adElements = findAdElements(AD_ANCHOR_CLASS_NAME);
 

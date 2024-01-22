@@ -2,6 +2,7 @@ import { getCreativeCommentMarkup, triggerPixel, createTrackPixelHtml, loadScrip
 import { isSafeFrame, isMobileApp } from './environment';
 import { insertElement } from './domHelper';
 import { writeAdHtml } from './postscribeRender';
+import {appBidTrack, Freestar} from "./freestar";
 
 const DEFAULT_CACHE_HOST = 'prebid.adnxs.com';
 const DEFAULT_CACHE_PATH = '/pbc/v1/cache';
@@ -17,7 +18,8 @@ const DEFAULT_CACHE_PATH = '/pbc/v1/cache';
  */
 export function renderAmpOrMobileAd(dataObject) {
   const targetingData = transformAuctionTargetingData(dataObject);
-  let { cacheHost, cachePath, uuid, size, hbPb } = targetingData;
+  const freestar = new Freestar(targetingData);
+  let { cacheHost, cachePath, uuid, size, hbPb, env } = freestar;
   uuid = uuid || '';
   // For MoPub, creative is stored in localStorage via SDK.
   let search = 'Prebid_';
@@ -29,7 +31,7 @@ export function renderAmpOrMobileAd(dataObject) {
     let adUrl = `${getCacheEndpoint(cacheHost, cachePath)}?uuid=${uuid}`;
     //register creative right away to not miss initial geom-update
     updateIframe(size);
-    sendRequest(adUrl, responseCallback(isMobileApp(targetingData.env), hbPb));
+    sendRequest(adUrl, responseCallback(isMobileApp(env), hbPb, uuid));
   }
 }
 
@@ -102,13 +104,15 @@ function getCacheEndpoint(cacheHost, cachePath) {
  * Cache request Callback to display creative
  * @param {Bool} isMobileApp
  * @param {string} hbPb final price of the winning bid
+ * @param {string} uuid
  * @returns {function} a callback function that parses response
  */
-function responseCallback(isMobileApp, hbPb) {
+function responseCallback(isMobileApp, hbPb, uuid) {
   return function (response) {
     let bidObject = parseResponse(response);
     let auctionPrice = bidObject.price || hbPb;
     let ad = getCreativeCommentMarkup(bidObject);
+    appBidTrack(uuid);
     let width = (bidObject.width) ? bidObject.width : bidObject.w;
     let height = (bidObject.height) ? bidObject.height : bidObject.h;
 

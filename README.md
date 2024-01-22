@@ -89,6 +89,17 @@ When we run `npm publish`, prepublish script of package.json is executed. Script
 
 [jsDelivr](https://www.jsdelivr.com/) – Open Source CDN is used to serve creative.js file.
 
+## Freestar Build For Staging and Production
+
+`gulp build` is executed before publish. It creates following files in dist directory
+
++ `./dist/amp.js` - Minified amp.js source code (responsible for rendering amp ads)
++ `./dist/banner.js` - Minified banner.js source code (responsible for rendering banner ads)
++ `./dist/mobile.js` - Minified mobile.js source code (responsible for rendering mobile ads)
++ `./dist/native.js` - Minified native.js source code (responsible for rendering native ads)
++ `./dist/video.js` - Minified video.js source code (responsible for rendering outstream video ads)
+  [jsDelivr](https://www.jsdelivr.com/) – Open Source CDN is used to serve creative.js file.
+
 ## Freestar Deployment
 ```
 $ bash bin/publish.sh
